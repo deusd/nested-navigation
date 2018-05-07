@@ -1,3 +1,4 @@
+import React from 'react'
 import { StackNavigator } from "react-navigation"
 import ContentScreen from "../screens/ContentScreen"
 import HomeScreen from "../screens/HomeScreen"
@@ -12,7 +13,7 @@ export default StackNavigator(
       screen: ContentScreen,
     },
     Quiz: {
-      screen: QuizNavigation,
+     screen:  ({ navigation, screenProps }) => <QuizNavigation screenProps={{parentNavigation: navigation, ...screenProps}}/>,
     }
   },
   {

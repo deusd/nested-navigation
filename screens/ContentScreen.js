@@ -13,6 +13,7 @@ export default class ContentScreen extends React.Component {
         key={"nextButton"}
         title="Click to go to next screen"
         onPress={() => {
+          this.setState({forceContent: false})
           this.props.navigation.navigate("Content", {
             maxContent,
             currentContent: nextContent,
@@ -29,6 +30,7 @@ export default class ContentScreen extends React.Component {
         title="Click to go to quiz screen"
         key={"quizButton"}
         onPress={() => {
+          this.setState({forceContent: false})
           this.props.navigation.navigate("Quiz", {
             maxContent: 5,
             currentContent: 1,
@@ -52,19 +54,19 @@ export default class ContentScreen extends React.Component {
   }
 
   onGoBack = (currentContent) => {
-    this.props.navigation.goBack()
     this.setState({stateContent: currentContent, forceContent: true})
   }
 
   render() {
     const { goBack, navigate } = this.props.navigation
-    const { stateContent } = this.state
+    const { stateContent, forceContent } = this.state
     const { maxContent, currentContent } = this.props.navigation.state.params
     let finalContent = currentContent
     
-    if(this.stateContent && this.forceContent) {
-      currentContent
+    if(stateContent && forceContent) {
+      finalContent = stateContent
     }
+    
     const hasNext = finalContent < maxContent
     const nextContent = finalContent + 1
 

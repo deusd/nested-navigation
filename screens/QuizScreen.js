@@ -5,6 +5,11 @@ import { ExpoLinksView } from "@expo/samples"
 export default class QuizScreen extends React.Component {
   static navigationOptions = { title: "Quiz Page" }
 
+  get navigation() {
+    const navigation = this.props.screenProps.parentNavigation || this.props.navigation
+    return navigation
+  }
+
   nextButton(nextContent, maxContent) {
     return (
       <Button
@@ -15,7 +20,8 @@ export default class QuizScreen extends React.Component {
           this.props.navigation.navigate("Quiz", {
             maxContent,
             currentContent: nextContent,
-            onGoBack: this.props.navigation.state.params.onGoBack
+            onGoBack: this.navigation.state.params.onGoBack,
+            parentNavigation: this.navigation
           })
         }}
       />
@@ -30,10 +36,10 @@ export default class QuizScreen extends React.Component {
         title="Click to go back to the content screen page 3"
         onPress={() => {
           // set the current screen when we go back
-          this.props.navigation.state.params.onGoBack(3)
+          this.navigation.state.params.onGoBack(3)
 
           // pop the stack navigator
-          this.props.navigation.goBack(null)
+          this.navigation.goBack()
         }}
       />
     )
@@ -45,7 +51,7 @@ export default class QuizScreen extends React.Component {
         color="#1189f5"
         title="You made it to the end!!!"
         onPress={() => {
-          this.props.navigation.goBack()
+          this.props.screenProps.parentNavigation.goBack()
         }}
       />
     )
@@ -56,6 +62,9 @@ export default class QuizScreen extends React.Component {
     const { maxContent = 5, currentContent = 1 } = (state.params || {})
     const hasNext = currentContent < maxContent
     const nextContent = currentContent + 1
+
+    const {navigation, screenProps, parentNavigation} = this.props
+    console.log({navigation, screenProps})
 
     return (
       <View style={styles.container}>
