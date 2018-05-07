@@ -2,38 +2,38 @@ import React from "react"
 import { View, StyleSheet, Text, Button } from "react-native"
 import { ExpoLinksView } from "@expo/samples"
 
-export default class ContentScreen extends React.Component {
-  static navigationOptions = { title: "Content Page" }
-  state = {}
+export default class QuizScreen extends React.Component {
+  static navigationOptions = { title: "Quiz Page" }
 
   nextButton(nextContent, maxContent) {
     return (
       <Button
         color="#1189f5"
-        key={"nextButton"}
         title="Click to go to next screen"
+        key={"nextButton"}
         onPress={() => {
-          this.props.navigation.navigate("Content", {
+          this.props.navigation.navigate("Quiz", {
             maxContent,
             currentContent: nextContent,
+            onGoBack: this.props.navigation.state.params.onGoBack
           })
         }}
       />
     )
   }
 
-  quizButton() {
+  contentButton(nextContent, maxContent) {
     return (
       <Button
         color="#1189f5"
-        title="Click to go to quiz screen"
-        key={"quizButton"}
+        key={"contentButton"}
+        title="Click to go back to the content screen page 3"
         onPress={() => {
-          this.props.navigation.navigate("Quiz", {
-            maxContent: 5,
-            currentContent: 1,
-            onGoBack: this.onGoBack
-          })
+          // set the current screen when we go back
+          this.props.navigation.state.params.onGoBack(3)
+
+          // pop the stack navigator
+          this.props.navigation.goBack(null)
         }}
       />
     )
@@ -45,43 +45,33 @@ export default class ContentScreen extends React.Component {
         color="#1189f5"
         title="You made it to the end!!!"
         onPress={() => {
-          this.props.navigation.popToTop()
+          this.props.navigation.goBack()
         }}
       />
     )
   }
 
-  onGoBack = (currentContent) => {
-    this.props.navigation.goBack()
-    this.setState({stateContent: currentContent, forceContent: true})
-  }
-
   render() {
-    const { goBack, navigate } = this.props.navigation
-    const { stateContent } = this.state
-    const { maxContent, currentContent } = this.props.navigation.state.params
-    let finalContent = currentContent
-    
-    if(this.stateContent && this.forceContent) {
-      currentContent
-    }
-    const hasNext = finalContent < maxContent
-    const nextContent = finalContent + 1
+    const { goBack, navigate, state = {} } = this.props.navigation
+    const { maxContent = 5, currentContent = 1 } = (state.params || {})
+    const hasNext = currentContent < maxContent
+    const nextContent = currentContent + 1
 
     return (
       <View style={styles.container}>
         <Text style={styles.title}>
-          Welcome to the Content Page {finalContent}!
+          Welcome to the Quiz Page {currentContent}!
         </Text>
         <Text style={styles.subtitle}>
-          {finalContent} of {maxContent}
+          {currentContent} of {maxContent}
         </Text>
         <Button
           color="#841584"
           title="Click to go to previous screen"
           onPress={() => this.props.navigation.pop()}
         />
-        {hasNext ? [this.quizButton(), this.nextButton(nextContent, maxContent)] : this.doneButton()}
+
+        {hasNext ? [this.nextButton(nextContent, maxContent), this.contentButton()] : this.doneButton()}
       </View>
     )
   }
